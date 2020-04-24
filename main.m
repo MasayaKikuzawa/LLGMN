@@ -53,7 +53,6 @@ for a =1:in_siz(1)
         end
     end
     Ik = sum(Okm,2);
-    disp(Ik)
     Yk(a,:) = Ik;
 end
 
