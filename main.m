@@ -34,24 +34,27 @@ for i = 1:in_siz(1)
 end
 in_siz = size(inputdata);
 
+trainweights = weights;
+
+[tyk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,traindata);
+
+Jn = -1*sum(dot(leatdata(1,:),log(tyk(1,:))));
 
 
-tyk = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,traindata);
+for i = 1:data_siz
+    for j = 1:class_siz
+        for k = 1:conponent_siz
+            for l = 1:in_siz(2)
+                mymister(j,k,l,i) = (tyk(i,j)-leatdata(i,j))*aOkm(j,k,i)/tyk(i,j)*traindata(i,l);
+            end
+        end
+    end
+end
 
-Jn = -1*sum(dot(leatdata(1,:),log(tyk(1,:))))
-
-
-% for i = 1:data_siz
-%     for j = 1:class_siz
-%         for k = 1:conponent_siz
-%             for l = 1:in_siz(2)
-%                 
-%             end
-%         end
-%     end
-% end
-
-mister = 
+deltaw = -1*study_rate*sum(mymister,4);
+disp(trainweights)
+trainweights =trainweights - deltaw;
+disp(trainweights)
 
 
 
@@ -60,10 +63,11 @@ mister =
 
 %% 実行
 
-Yk = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,inputdata);
+[Yk Okm] = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,inputdata);
 
 
-function Yk = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,inputdata)
+function [Yk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,inputdata)
+    aOkm = zeros(class_siz,conponent_siz,vector_siz,data_siz);
     in_siz = size(inputdata);
     for i =1:in_siz(1)
         for j = 1:in_siz(2)
@@ -75,6 +79,7 @@ function Yk = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,inputd
         for k = 1:ikm_siz(1)
             for m = 1:ikm_siz(2)
                 Okm(k,m)= exp(Ikm(k,m))/sum(exp(Ikm),'all');
+                aOkm(k,m,i) = Okm(k,m);
             end
         end
         Ik = sum(Okm,2);
