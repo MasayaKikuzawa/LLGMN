@@ -1,5 +1,4 @@
 %% 初期設定
-epoch = 10000;
 data_siz = 800;
 mymister = zeros(class_siz,conponent_siz,vector_siz,data_siz);
 deltaw = zeros(class_siz,conponent_siz,vector_siz);
@@ -51,7 +50,7 @@ Jn = -1*sum(dot(leatdata(1,:),log(tyk(1,:))))
 %     end
 % end
 
-mister = 
+
 
 
 
