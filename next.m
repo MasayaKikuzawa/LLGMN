@@ -1,6 +1,6 @@
 %% 初期設定
 %学習エポック数
-epoch = 100;
+epoch = 10;
 %データ数
 data_siz = 800;
 % クラス数
@@ -9,7 +9,7 @@ class_siz = 4;
 conponent_siz = 2;
 % 入力ベクトルの長さ
 vector_siz = 6;
-trainswitch = 0;
+
 % 誤差関数用の数値
 J=0;
 % 識別率
@@ -52,8 +52,11 @@ for i = 1:in_siz(1)
     traindata(i,:) = [1 leadata(1,:) times(leadata(i,1),leadata(i,1)) times(leadata(i,1),leadata(i,2)) times(leadata(i,2),leadata(i,2))];
 end
 
-r = randperm(800);
+%学習切り替え用の変数(0:一括学習、1:逐次学習)
+trainswitch = 1;
 
+%学習データをランダム化する
+r = randperm(800);
 traindata = traindata(r,:,:,:,:,:);
 leatdata = leatdata(r,:,:,:);
 
@@ -111,7 +114,6 @@ if trainswitch == 1
                         vari(j,k,l,i) = (tyk(i,j)-leatdata(i,j))*aOkm(j,k,i)/tyk(i,j)*traindata(i,l);
                         % dJn/dwを求める式、LLGMN解説スライドp.19をもとに説明するなら
                         % vari(クラス数k、コンポーネント数m、ベクトルの長さh、学習データの数n)の四次元配列になっている
-  
                         deltaw = -1*study_rate*vari(:,:,:,i);
                         %学習による重みの更新
                         trainweights =trainweights - deltaw;

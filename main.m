@@ -41,10 +41,10 @@ filename02 ='dis_T_sig.csv';
 filename03 ='lea_sig.csv';
 filename04 ='lea_T_sig.csv';
 
-disdata = readmatrix(filename01);
-distdata= readmatrix(filename02);
-leadata = readmatrix(filename03);
-leatdata= readmatrix(filename04);
+disdata = csvread(filename01);
+distdata= csvread(filename02);
+leadata = csvread(filename03);
+leatdata= csvread(filename04);
 
 in_siz = size(inputdata);
 
@@ -123,6 +123,7 @@ function [Yk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,weights
         Yk(i,:) = Ik;
     end
 end
+
 
 
 
