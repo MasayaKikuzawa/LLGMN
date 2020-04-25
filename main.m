@@ -101,7 +101,7 @@ for i = 1:data_siz
 end
 
 disp(cp/data_siz)
-
+writematrix(Yk,'output.csv');
 
 function [Yk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,inputdata)
     aOkm = zeros(class_siz,conponent_siz,vector_siz,data_siz);
