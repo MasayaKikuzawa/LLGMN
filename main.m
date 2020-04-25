@@ -1,19 +1,21 @@
 %% 初期設定
-epoch = 10000;
+epoch = 5;
 data_siz = 800;
-mymister = zeros(class_siz,conponent_siz,vector_siz,data_siz);
-deltaw = zeros(class_siz,conponent_siz,vector_siz);
 mister = 0;
 class_siz = 4;
 conponent_siz = 2;
 vector_siz = 6;
+J=0;
+cp = 0;
+cd = [0]*data_siz;
+mymister = zeros(class_siz,conponent_siz,vector_siz,data_siz);
+deltaw = zeros(class_siz,conponent_siz,vector_siz);
 study_rate = 0.001;
 Yk = zeros(data_siz,class_siz) ;
 tyk = zeros(data_siz,class_siz) ;
 weights = rand(class_siz,conponent_siz,vector_siz);
 ow = zeros(class_siz,conponent_siz,vector_siz);
 inputdata = zeros(800,6);
-
 traindata = zeros(800,6);
 
 filename01 ='dis_sig.csv';
@@ -34,28 +36,33 @@ for i = 1:in_siz(1)
 end
 in_siz = size(inputdata);
 
+%% 学習
+
+
 trainweights = weights;
 
-[tyk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,traindata);
-
-Jn = -1*sum(dot(leatdata(1,:),log(tyk(1,:))));
-
-
-for i = 1:data_siz
-    for j = 1:class_siz
-        for k = 1:conponent_siz
-            for l = 1:in_siz(2)
-                mymister(j,k,l,i) = (tyk(i,j)-leatdata(i,j))*aOkm(j,k,i)/tyk(i,j)*traindata(i,l);
+for m = 1:epoch
+    [tyk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,trainweights,traindata);
+    
+    Jn = -1*sum(dot(leatdata(1,:),log(tyk(1,:))));
+    
+    
+    for i = 1:data_siz
+        for j = 1:class_siz
+            for k = 1:conponent_siz
+                for l = 1:in_siz(2)
+                    mymister(j,k,l,i) = (tyk(i,j)-leatdata(i,j))*aOkm(j,k,i)/tyk(i,j)*traindata(i,l);
+                    
+                end
             end
         end
     end
+    
+    deltaw = -1*study_rate*sum(mymister,4);
+    J=J+Jn
+    trainweights =trainweights - deltaw;
+    disp(J)
 end
-
-deltaw = -1*study_rate*sum(mymister,4);
-disp(trainweights)
-trainweights =trainweights - deltaw;
-disp(trainweights)
-
 
 
 
@@ -63,7 +70,16 @@ disp(trainweights)
 
 %% 実行
 
-[Yk Okm] = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,inputdata);
+[Yk Okm] = forward(data_siz,class_siz,conponent_siz,vector_siz,trainweights,inputdata);
+
+for i = 1:data_siz
+    cd(i) = dot(Yk(i,:),distdata(i,:));
+    if cd(i) > 0.8
+        cp = cp + 1;
+    end
+end
+
+disp(cp/data_siz)
 
 
 function [Yk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,inputdata)
