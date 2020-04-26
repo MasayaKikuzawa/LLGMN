@@ -1,8 +1,6 @@
 %% 初期設定
 %学習エポック数
 epoch = 1000;
-% 学習率
-study_rate = 0.001;
 %データ数
 data_siz = 800;
 % クラス数
@@ -21,7 +19,8 @@ cd = [0]*data_siz;
 vari = zeros(class_siz,conponent_siz,vector_siz,data_siz);
 % Δw
 deltaw = zeros(class_siz,conponent_siz,vector_siz);
-
+% 学習率
+study_rate = 0.001;
 % 出力
 Yk = zeros(data_siz,class_siz) ;
 % 学習データによる出力
@@ -73,9 +72,8 @@ if trainswitch == 0
             for j = 1:class_siz
                 for k = 1:conponent_siz
                     for l = 1:vector_siz
-                        %dJn/dwを求める式。LLGMN資料p.18,19　式(22),(24)参照
                         vari(j,k,l,i) = (tyk(i,j)-leatdata(i,j))*aOkm(j,k,i)/tyk(i,j)*traindata(i,l);
-                        % LLGMN解説スライドp.19をもとに説明するなら
+                        % dJn/dwを求める式、LLGMN解説スライドp.19をもとに説明するなら
                         % vari(クラス数k、コンポーネント数m、ベクトルの長さh、学習データの数n)の四次元配列になっている
                     end
                 end
@@ -119,9 +117,9 @@ if trainswitch == 1
             for j = 1:class_siz
                 for k = 1:conponent_siz
                     for l = 1:in_siz(2)
-                        %dJn/dwを求める式。LLGMN資料p.18,19　式(22),(24)参照
+                        %誤差関数の計算。LLGMN資料p.18,19　式(22),(24)参照
                         vari(j,k,l,i) = (tyk(i,j)-leatdata(i,j))*aOkm(j,k,i)/tyk(i,j)*traindata(i,l);
-                        % LLGMN解説スライドp.19をもとに説明するなら
+                        % dJn/dwを求める式、LLGMN解説スライドp.19をもとに説明するなら
                         % vari(クラス数k、コンポーネント数m、ベクトルの長さh、学習データの数n)の四次元配列になっている
                         deltaw = -1*study_rate*vari(:,:,:,i);
                         %学習による重みの更新
