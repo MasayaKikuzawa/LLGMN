@@ -34,6 +34,8 @@ inputdata = zeros(800,6);
 % 学習データ用の配列
 traindata = zeros(800,6);
 
+error= []*1000;
+
 %% データ入力
 
 filename01 ='dis_sig.csv';
@@ -52,7 +54,7 @@ for i = 1:in_siz(1)
 end
 
 %学習切り替え用の変数(0:一括学習、1:逐次学習)
-trainswitch = 1;
+trainswitch = 0;
 %% 一括学習
 
 if trainswitch == 0
@@ -81,14 +83,14 @@ if trainswitch == 0
         %Δw = 学習データ数n分の重み更新を足し合わせたdJn/dwと-εを足し合わせている
         deltaw = -1*study_rate*sum(vari,4);
         
-        
+        error(m) = J;
         
         %学習による重みの更新
         trainweights =trainweights + deltaw;
         
     end
     
-    X = sprintf('誤差関数 %d',J);
+    X = sprintf('一括学習の誤差関数 %d',J);
     disp(X)
     
 end
@@ -125,9 +127,10 @@ if trainswitch == 1
             Jn = -1*sum(dot(leatdata(i,:),log(tyk(i,:))));
             J=J+Jn;
         end
+        error(m) = J;
     end
     
-    X = sprintf('誤差関数 %d',J);
+    X = sprintf('逐次学習の誤差関数 %d',J);
     disp(X)
     
 end
@@ -145,8 +148,22 @@ for i = 1:data_siz
     end
 end
 
-disp(cp/data_siz)
-writematrix(Yk,'output.csv');
+answer = cp/data_siz;
+if trainswitch == 0
+    X = sprintf('一括学習の識別率は %d',answer);
+    disp(X)
+    writematrix(Yk,'batch_output.csv');
+    error = transpose(error);
+    writematrix(error,'batch_error.csv');
+elseif trainswitch == 1
+    X = sprintf('逐次学習の識別率は %d',answer);
+    disp(X)
+    writematrix(Yk,'online_output.csv');
+    error = transpose(error);
+    writematrix(error,'online_error.csv');
+end
+
+
 
 function [Yk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,weights,inputdata)
     aOkm = zeros(class_siz,conponent_siz,vector_siz,data_siz);
