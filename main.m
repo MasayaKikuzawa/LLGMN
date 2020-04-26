@@ -49,8 +49,8 @@ leatdata= csvread(filename04);
 in_siz = size(inputdata);
 
 for i = 1:in_siz(1)
-    inputdata(i,:) = [1 disdata(1,:) times(disdata(i,1),disdata(i,1)) times(disdata(i,1),disdata(i,2)) times(disdata(i,2),disdata(i,2))];
-    traindata(i,:) = [1 leadata(1,:) times(leadata(i,1),leadata(i,1)) times(leadata(i,1),leadata(i,2)) times(leadata(i,2),leadata(i,2))];
+    inputdata(i,:) = [1 disdata(i,:) times(disdata(i,1),disdata(i,1)) times(disdata(i,1),disdata(i,2)) times(disdata(i,2),disdata(i,2))];
+    traindata(i,:) = [1 leadata(i,:) times(leadata(i,1),leadata(i,1)) times(leadata(i,1),leadata(i,2)) times(leadata(i,2),leadata(i,2))];
 end
 %% 学習
 
@@ -60,7 +60,7 @@ trainweights = weights;
 for m = 1:epoch
     [tyk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,trainweights,traindata);
     %損失関数の計算
-    Jn = -1*sum(dot(leatdata(1,:),log(tyk(1,:))));
+    
     
     
     for i = 1:data_siz
@@ -73,12 +73,14 @@ for m = 1:epoch
                 end
             end
         end
+        Jn = -1*sum(dot(leatdata(i,:),log(tyk(i,:))));
+        J = J+Jn;
     end
     %Δwを求める一括学習の式
     %Δw = 学習データ数n分の重み更新を足し合わせたdJn/dwと-εを足し合わせている
     deltaw = -1*study_rate*sum(vari,4);
     
-    J=J+Jn
+    %J=J+Jn
     
     %学習による重みの更新
     trainweights =trainweights - deltaw;
