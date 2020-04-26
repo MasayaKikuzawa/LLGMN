@@ -1,6 +1,6 @@
 %% 初期設定
 %学習エポック数
-epoch = 10;
+epoch = 1000;
 %データ数
 data_siz = 800;
 % クラス数
@@ -89,7 +89,7 @@ if trainswitch == 0
         J=J+Jn
         
         %学習による重みの更新
-        trainweights =trainweights - deltaw;
+        trainweights =trainweights + deltaw;
         
     end
     
@@ -116,7 +116,7 @@ if trainswitch == 1
                         % vari(クラス数k、コンポーネント数m、ベクトルの長さh、学習データの数n)の四次元配列になっている
                         deltaw = -1*study_rate*vari(:,:,:,i);
                         %学習による重みの更新
-                        trainweights =trainweights - deltaw;
+                        trainweights =trainweights + deltaw;
                     end
                 end
             end
