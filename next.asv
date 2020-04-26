@@ -9,6 +9,7 @@ class_siz = 4;
 conponent_siz = 2;
 % 入力ベクトルの長さ
 vector_siz = 6;
+
 % 誤差関数用の数値
 J=0;
 % 識別率
@@ -20,7 +21,7 @@ vari = zeros(class_siz,conponent_siz,vector_siz,data_siz);
 % Δw
 deltaw = zeros(class_siz,conponent_siz,vector_siz);
 % 学習率
-study_rate = 0.001;
+study_rate = 0.0001;
 % 出力
 Yk = zeros(data_siz,class_siz) ;
 % 学習データによる出力
@@ -47,12 +48,18 @@ leadata = readmatrix(filename03);
 leatdata= readmatrix(filename04);
 in_siz = size(inputdata);
 for i = 1:in_siz(1)
-    inputdata(i,:) = [1 disdata(i,:) times(disdata(i,1),disdata(i,1)) times(disdata(i,1),disdata(i,2)) times(disdata(i,2),disdata(i,2))];
-    traindata(i,:) = [1 leadata(i,:) times(leadata(i,1),leadata(i,1)) times(leadata(i,1),leadata(i,2)) times(leadata(i,2),leadata(i,2))];
+    inputdata(i,:) = [1 disdata(1,:) times(disdata(i,1),disdata(i,1)) times(disdata(i,1),disdata(i,2)) times(disdata(i,2),disdata(i,2))];
+    traindata(i,:) = [1 leadata(1,:) times(leadata(i,1),leadata(i,1)) times(leadata(i,1),leadata(i,2)) times(leadata(i,2),leadata(i,2))];
 end
 
 %学習切り替え用の変数(0:一括学習、1:逐次学習)
 trainswitch = 1;
+
+%学習データをランダム化する
+r = randperm(800);
+traindata = traindata(r,:,:,:,:,:);
+leatdata = leatdata(r,:,:,:);
+
 %% 一括学習
 
 if trainswitch == 0
@@ -62,26 +69,27 @@ if trainswitch == 0
         
         J = 0; 
         
-        [tyk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,trainweights,traindata);   
+        [tyk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,trainweights,traindata);
+        %損失関数の計算
+        Jn = -1*sum(dot(leatdata(1,:),log(tyk(1,:))));
+        
         
         for i = 1:data_siz
             for j = 1:class_siz
                 for k = 1:conponent_siz
-                    for l = 1:vector_siz
+                    for l = 1:in_siz(2)
                         vari(j,k,l,i) = (tyk(i,j)-leatdata(i,j))*aOkm(j,k,i)/tyk(i,j)*traindata(i,l);
                         % dJn/dwを求める式、LLGMN解説スライドp.19をもとに説明するなら
                         % vari(クラス数k、コンポーネント数m、ベクトルの長さh、学習データの数n)の四次元配列になっている
                     end
                 end
             end
-            Jn = -1*sum(dot(leatdata(i,:),log(tyk(i,:))));
-            J=J+Jn;
         end
         %Δwを求める一括学習の式
         %Δw = 学習データ数n分の重み更新を足し合わせたdJn/dwと-εを足し合わせている
         deltaw = -1*study_rate*sum(vari,4);
         
-        
+        J=J+Jn
         
         %学習による重みの更新
         trainweights =trainweights + deltaw;
@@ -96,11 +104,6 @@ end
 %% 逐次学習
 
 if trainswitch == 1
-    %学習データをランダム化する
-    r = randperm(800);
-    traindata = traindata(r,:,:,:,:,:);
-    leatdata = leatdata(r,:,:,:);
-    
     trainweights = weights;
     
     for m = 1:epoch
@@ -108,6 +111,9 @@ if trainswitch == 1
         J = 0;
         
         [tyk aOkm] = forward(data_siz,class_siz,conponent_siz,vector_siz,trainweights,traindata);
+        %損失関数の計算
+        Jn = -1*sum(dot(leatdata(1,:),log(tyk(1,:))));
+        
         
         for i = 1:data_siz
             for j = 1:class_siz
@@ -122,14 +128,13 @@ if trainswitch == 1
                     end
                 end
             end
-            Jn = -1*sum(dot(leatdata(i,:),log(tyk(i,:))));
-            J=J+Jn;
         end
+        J=J+Jn
+        
     end
     
     X = sprintf('誤差関数 %d',J);
     disp(X)
-    
 end
 
 

@@ -89,8 +89,7 @@ for m = 1:epoch
     %学習による重みの更新
     trainweights =trainweights + deltaw;
 end
-X = sprintf('誤差関数 %d',J);
-disp(X)
+
 
 
 
